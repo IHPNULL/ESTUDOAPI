@@ -14,36 +14,37 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 public class Livro {
-	
+
 	@JsonInclude(Include.NON_NULL)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@JsonInclude(Include.NON_NULL)
 	private String titulo;
-	
+
 	@JsonInclude(Include.NON_NULL)
 	private String editora;
 
 	@JsonInclude(Include.NON_NULL)
 	private String resumo;
-	
+
 	@JsonInclude(Include.NON_NULL)
 	@Transient
 	private List<Comentario> comentarios;
-	
+
 	@JsonInclude(Include.NON_NULL)
 	private String autor;
-	
+
 	@JsonInclude(Include.NON_NULL)
 	private String subtitulo;
 
 	@JsonInclude(Include.NON_NULL)
 	private Date data;
 
-	public Livro() {}
-	
+	public Livro() {
+	}
+
 	public Livro(String titulo) {
 		super();
 		this.titulo = titulo;
@@ -112,5 +113,5 @@ public class Livro {
 	public void setData(Date data) {
 		this.data = data;
 	}
-	
+
 }

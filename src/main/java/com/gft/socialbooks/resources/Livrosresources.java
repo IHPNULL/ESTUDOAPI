@@ -14,50 +14,54 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gft.socialbooks.domain.Livro;
-import com.gft.socialbooks.repository.LivrosRep;
+import com.gft.socialbooks.services.Livrosservice;
+import com.gft.socialbooks.services.exceptions.Livronaoencontradoexception;
 
 @RestController
 @RequestMapping("/livros")
 public class Livrosresources {
 
-		@Autowired
-		private LivrosRep livros;
-	
-		@RequestMapping(method = RequestMethod.GET)
-		public List<Livro> listar() {
-			return livros.findAll();
+	@Autowired
+	private Livrosservice livros;
+
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<Livro>> listar() {
+		return ResponseEntity.status(HttpStatus.OK).body(livros.listar());
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> salvar(@RequestBody Livro livro) {
+		livro = livros.salvar(livro);
+
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(livro.getId()).toUri();
+
+		return ResponseEntity.created(uri).build();
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
+		livros.deletar(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> editar(@RequestBody Livro livro, @PathVariable("id") Long id) {
+		livro.setId(id);
+		livros.atualizar(livro);
+		return ResponseEntity.noContent().build();
+
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
+		Livro livro = null;
+		try {
+			livro = livros.buscar(id);
+
+		} catch (Livronaoencontradoexception e) {
+			return ResponseEntity.notFound().build();
 		}
-		
-		@RequestMapping(method = RequestMethod.POST)
-		public void salvar(@RequestBody Livro livro)
-		{
-			livros.save(livro);
-			
-			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(livro.getId()).toUri();
-		}
-			
-		@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-		public void deletar(@PathVariable("id") Long id)
-		{
-			livros.deleteById(id);
-		}
-		
-		@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-		public void editar(@RequestBody Livro livro, @PathVariable("id") Long id)
-		{
-			livro.setId(id);
-			livros.save(livro);
-		}
-		
-		@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-		public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-			Livro livro = livros.findById(id).get();
-			
-			if(livro == null)
-			{
-				return ResponseEntity.notFound().build();
-			}
-			
-			return ResponseEntity.status(HttpStatus.OK).body(livro);
-		}		
+		return ResponseEntity.status(HttpStatus.OK).body(livro);
+	}
+
 }
