@@ -2,15 +2,49 @@ package com.gft.socialbooks.domain;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Entity
 public class Comentario {
-	
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@NotEmpty(message = "O livro deve possuir um comentário.")
+	@Size(max = 1000, message = "O comentário deve possuir no máximo 1000 caracteres.")
+	@JsonProperty("comentario") // com Jsonproperty podemos mudar o nome do atributo selecionado
+	private String texto;
+
+	@NotNull(message = "O comentário deve possuir um usuário")
+	@JsonInclude(Include.NON_NULL)
+	private String usuario;
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@JsonInclude(Include.NON_NULL)
+	@NotNull(message = "O comentário deve possuir sua data de publicação.")
 	private Date data;
-	
-	private String nome;
-	
-	private String comentario;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "LIVRO_ID")
+	@JsonIgnore // preciso colocar isso porque senão a memoria ficara num ciclo, com isso ele
+				// termina e não trava a memoria
+	private Livro livro;
 
 	public Long getId() {
 		return id;
@@ -18,6 +52,22 @@ public class Comentario {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getTexto() {
+		return texto;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
+	}
+
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
 	}
 
 	public Date getData() {
@@ -28,20 +78,12 @@ public class Comentario {
 		this.data = data;
 	}
 
-	public String getNome() {
-		return nome;
+	public Livro getLivro() {
+		return livro;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getComentario() {
-		return comentario;
-	}
-
-	public void setComentario(String comentario) {
-		this.comentario = comentario;
+	public void setLivro(Livro livro) {
+		this.livro = livro;
 	}
 
 }

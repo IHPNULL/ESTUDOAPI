@@ -1,12 +1,15 @@
 package com.gft.socialbooks.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.gft.socialbooks.domain.Comentario;
 import com.gft.socialbooks.domain.Livro;
+import com.gft.socialbooks.repository.ComentariosRep;
 import com.gft.socialbooks.repository.LivrosRep;
 import com.gft.socialbooks.services.exceptions.Livronaoencontradoexception;
 
@@ -16,6 +19,9 @@ public class Livrosservice {
 	@Autowired
 	private LivrosRep livros;
 
+	@Autowired
+	private ComentariosRep comentarios;
+
 	public List<Livro> listar() {
 		return livros.findAll();
 	}
@@ -24,7 +30,7 @@ public class Livrosservice {
 		Livro livro = livros.findById(id).get();
 
 		if (livro == null) {
-			throw new Livronaoencontradoexception("Livro nao encontrado");
+			throw new Livronaoencontradoexception("O livro não foi encontrado.");
 		}
 
 		return livro;
@@ -44,13 +50,26 @@ public class Livrosservice {
 			throw new Livronaoencontradoexception("Livro deletado");
 		}
 	}
-	 
+
 	public void atualizar(Livro livro) {
 		verificarExistencia(livro);
 		livros.save(livro);
 	}
-	
+
 	public void verificarExistencia(Livro livro) {
 		buscar(livro.getId());
+	}
+
+	public Comentario salvarcomentario(Long livroid, Comentario comentario) {
+		Livro livro = buscar(livroid);
+
+		comentario.setLivro(livro);
+		comentario.setData(new Date());
+
+		return comentarios.save(comentario);
+	}
+
+	public static List<Comentario> listarComentarios(Long livroId) {
+		return null;
 	}
 }

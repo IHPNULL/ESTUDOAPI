@@ -1,5 +1,6 @@
 package com.gft.socialbooks.services.exceptions;
 
+@SuppressWarnings("serial")
 public class Livronaoencontradoexception extends RuntimeException {
 	
 	
@@ -12,3 +13,4 @@ public class Livronaoencontradoexception extends RuntimeException {
 	}
 	
 }
+ 

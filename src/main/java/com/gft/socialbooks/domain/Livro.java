@@ -7,47 +7,56 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 public class Livro {
 
-	@JsonInclude(Include.NON_NULL)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonInclude(Include.NON_NULL)
-	private String titulo;
+	@NotEmpty(message = "O nome do livro não pode estar vazio.")
+	private String nome;
 
 	@JsonInclude(Include.NON_NULL)
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@NotNull(message = "A data da publicação tem que estar preenchida.")
+	private Date publicacao;
+
+	@JsonInclude(Include.NON_NULL)
+	@NotNull(message = "O nome da editora tem que estar preenchido.")
 	private String editora;
 
 	@JsonInclude(Include.NON_NULL)
+	@NotNull(message = "O resumo tem que estar preenchido.")
+	@Size(max = 1300, message = "O resumo não deve ter mais de 1300 caracteres.")
 	private String resumo;
 
-	@JsonInclude(Include.NON_NULL)
-	@Transient
+	@JsonInclude(Include.NON_EMPTY)
+	@OneToMany(mappedBy = "livro")
 	private List<Comentario> comentarios;
 
+	@ManyToOne
+	@JoinColumn(name = "AUTOR_ID")
 	@JsonInclude(Include.NON_NULL)
-	private String autor;
-
-	@JsonInclude(Include.NON_NULL)
-	private String subtitulo;
-
-	@JsonInclude(Include.NON_NULL)
-	private Date data;
+	private Autor autor;
 
 	public Livro() {
+
 	}
 
-	public Livro(String titulo) {
-		super();
-		this.titulo = titulo;
+	public Livro(String nome) {
+		this.nome = nome;
 	}
 
 	public Long getId() {
@@ -58,12 +67,20 @@ public class Livro {
 		this.id = id;
 	}
 
-	public String getTitulo() {
-		return titulo;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public Date getPublicacao() {
+		return publicacao;
+	}
+
+	public void setPublicacao(Date publicacao) {
+		this.publicacao = publicacao;
 	}
 
 	public String getEditora() {
@@ -90,28 +107,11 @@ public class Livro {
 		this.comentarios = comentarios;
 	}
 
-	public String getAutor() {
+	public Autor getAutor() {
 		return autor;
 	}
 
-	public void setAutor(String autor) {
+	public void setAutor(Autor autor) {
 		this.autor = autor;
 	}
-
-	public String getSubtitulo() {
-		return subtitulo;
-	}
-
-	public void setSubtitulo(String subtitulo) {
-		this.subtitulo = subtitulo;
-	}
-
-	public Date getData() {
-		return data;
-	}
-
-	public void setData(Date data) {
-		this.data = data;
-	}
-
 }
